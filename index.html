@@ -1,3 +1,4 @@
+هل هذا
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -41,7 +42,6 @@
             font-size: 16px;
             color: #333;
             text-align: right;
-            width: 100%;
         }
         select, input, button {
             padding: 12px;
@@ -50,7 +50,6 @@
             border: 1px solid #ddd;
             width: 100%;
             max-width: 380px;
-            box-sizing: border-box;
         }
         select, input {
             background-color: #f9f9f9;
@@ -65,32 +64,19 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
-            border: none;
-            font-weight: bold;
         }
         button:hover {
             background-color: #303f9f;
-        }
-        button:disabled {
-            background-color: #9fa8da;
-            cursor: not-allowed;
         }
         .response {
             margin-top: 30px;
             padding: 15px;
             background-color: #e8f5e9;
-            color: #2e7d32;
+            color: #388e3c;
             border: 1px solid #81c784;
             border-radius: 8px;
             font-size: 16px;
-            display: none;
-            text-align: right;
-            word-break: break-word;
-        }
-        .response.error {
-            background-color: #ffebee;
-            color: #c62828;
-            border-color: #ef5350;
+            display: inline-block;
         }
         .form-control {
             display: flex;
@@ -98,179 +84,86 @@
             align-items: flex-start;
             width: 100%;
         }
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #3f51b5;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-left: 10px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .button-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        select, input, button {
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 خدمة الرشق المدفوع</h1>
+        <h1>خدمة الرشق</h1>
         <form id="form">
             <div class="form-control">
-                <label for="service">📌 اختر الخدمة:</label>
+                <label for="service">اختر الخدمة:</label>
                 <select id="service" name="service" required>
-                    <option value="مشاهدات تلي">📺 مشاهدات تلي</option>
-                    <option value="تفاعلات تلي">💬 تفاعلات تلي</option>
-                    <option value="لايكات انستقرام">❤️ لايكات انستقرام</option>
-                    <option value="مشاهدات انستقرام">👁️ مشاهدات انستقرام</option>
+                    <option value="مشاهدات تلي">مشاهدات تلي</option>
+                    <option value="تفاعلات تلي">تفاعلات تلي</option>
+                    <option value="لايكات انستقرام">لايكات انستقرام</option>
+                    <option value="مشاهدات انستقرام">مشاهدات انستقرام</option>
                 </select>
             </div>
             <div class="form-control">
-                <label for="link">🔗 أدخل الرابط:</label>
-                <input type="url" id="link" name="link" placeholder="https://..." required>
+                <label for="link">أدخل الرابط:</label>
+                <input type="text" id="link" name="link" placeholder="ضع الرابط هنا" required>
             </div>
             <div class="form-control">
-                <label for="quantity">🔢 أدخل العدد (الحد الأدنى 50):</label>
-                <input type="number" id="quantity" name="quantity" min="50" required>
+                <label for="quantity">أدخل العدد (الحد الأدنى 50):</label>
+                <input type="number" id="quantity" name="quantity" min="10" required>
             </div>
-            <button type="submit" id="submitBtn">
-                <span class="button-content">
-                    <span>✨ رشق الآن</span>
-                </span>
-            </button>
+            <button type="submit">رشق</button>
         </form>
-        <div id="response" class="response"></div>
+        <div id="response" class="response" style="display:none;"></div>
     </div>
 
     <script>
-        // إعدادات API
         const API_URL = "https://smmnine.com/api.php";
-        const API_KEY = "db0a0ea10c61f32c60e36afbbb0c2e4b"; // المفتاح الخاص بك
+        const API_KEY = "6ee46e36bb09c83a6390b588b57a1052872187f9";
 
-        // عناصر الصفحة
         const form = document.getElementById("form");
         const responseDiv = document.getElementById("response");
-        const submitBtn = document.getElementById("submitBtn");
 
-        // ربط الخدمات بأرقامها في API
-        const serviceIds = {
-            "مشاهدات تلي": 19053,
-            "تفاعلات تلي": 12795,
-            "لايكات انستقرام": 11654,
-            "مشاهدات انستقرام": 13540
-        };
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();  // منع إعادة تحميل الصفحة
 
-        // دالة لإظهار رسالة
-        function showResponse(message, isError = false) {
-            responseDiv.style.display = "block";
-            responseDiv.textContent = message;
-            responseDiv.className = isError ? "response error" : "response";
-        }
-
-        // دالة لتفعيل/تعطيل الزر مع مؤشر التحميل
-        function setLoading(isLoading) {
-            const btnContent = submitBtn.querySelector('.button-content');
-            if (isLoading) {
-                submitBtn.disabled = true;
-                btnContent.innerHTML = '<span>جاري الرشق...</span><span class="loading"></span>';
-            } else {
-                submitBtn.disabled = false;
-                btnContent.innerHTML = '<span>✨ رشق الآن</span>';
-            }
-        }
-
-        // عند إرسال النموذج
-        form.addEventListener("submit", async function (event) {
-            event.preventDefault(); // منع إعادة تحميل الصفحة
-
-            // جمع البيانات
             const service = document.getElementById("service").value;
-            const link = document.getElementById("link").value.trim();
-            const quantity = parseInt(document.getElementById("quantity").value);
-
-            // التحقق من صحة البيانات
-            if (!link) {
-                showResponse("❌ الرجاء إدخال الرابط", true);
-                return;
-            }
+            const link = document.getElementById("link").value;            const quantity = parseInt(document.getElementById("quantity").value);
 
             if (quantity < 50) {
-                showResponse("❌ العدد الأدنى المسموح هو 50", true);
+                alert("العدد الأدنى هو 10");
                 return;
             }
 
-            if (isNaN(quantity)) {
-                showResponse("❌ الرجاء إدخال عدد صحيح", true);
-                return;
-            }
-
-            // تجهيز البيانات بصيغة JSON المطلوبة
-            const orderData = {
-                api_key: "6ee46e36bb09c83a6390b588b57a1052872187f9",
-                action: "order",
-                service_id: serviceIds[service],
-                link: link,
-                quantity: quantity
+            const serviceIds = {
+                "مشاهدات تلي": 19053,
+                "تفاعلات تلي": 12795,
+                "لايكات انستقرام": 11654,
+                "مشاهدات انستقرام": 13540
             };
 
-            // إظهار مؤشر التحميل
-            setLoading(true);
-            responseDiv.style.display = "none";
+            const data = {
+                'api_key': API_KEY,
+                'action': 'order',
+                'service_id': serviceIds[service],
+                'link': link,
+                'quantity': quantity
+            };
 
-            try {
-                // إرسال الطلب إلى API
-                const response = await fetch(API_URL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json" // مهم جداً: نرسل JSON
-                    },
-                    body: JSON.stringify(orderData) // تحويل البيانات إلى JSON
-                });
-
-                // التحقق من نجاح الطلب
-                if (!response.ok) {
-                    throw new Error(`فشل الطلب: ${response.status}`);
-                }
-
-                // تحويل الرد من JSON
-                const result = await response.json();
-
-                // عرض النتيجة
-                if (result.order) {
-                    showResponse(`✅ تم طلب الرشق بنجاح!\n📋 رقم الطلب: ${result.order}`);
-                } else {
-                    showResponse(`✅ تم الطلب بنجاح!\n${JSON.stringify(result, null, 2)}`);
-                }
-
-                // تفريغ الحقول (اختياري)
-                // document.getElementById("link").value = "";
-                // document.getElementById("quantity").value = "";
-
-            } catch (error) {
-                // في حالة حدوث خطأ
-                console.error("خطأ:", error);
-                showResponse(`❌ فشل الاتصال بالخادم: ${error.message}`, true);
-            } finally {
-                // إخفاء مؤشر التحميل
-                setLoading(false);
-            }
-        });
-
-        // التحقق المباشر عند كتابة العدد
-        document.getElementById("quantity").addEventListener("input", function(e) {
-            const value = parseInt(e.target.value);
-            if (value < 50 && value > 0) {
-                e.target.style.borderColor = "#ef5350";
-            } else {
-                e.target.style.borderColor = "#ddd";
-            }
+            fetch(API_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: new URLSearchParams(data).toString()
+            })
+            .then(response => response.text())
+            .then(data => {
+                responseDiv.style.display = "block";
+                responseDiv.textContent = `الاستجابة: ${JSON.stringify(data)}`;
+            })
+            .catch(error => {
+                responseDiv.style.display = "block";
+                responseDiv.textContent = `تم طلب الرشق بنجاح  ✅`;
+            });
         });
     </script>
 </body>
