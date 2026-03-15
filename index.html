@@ -133,16 +133,16 @@
             }
 
             const serviceIds = {
-                "مشاهدات تلي": 9183,
+                "مشاهدات تلي": 9975,
                 "تفاعلات تلي": 12795,
                 "لايكات انستقرام": 11654,
                 "مشاهدات انستقرام": 13540
             };
 
             const data = {
-                'key': API_KEY,
-                'action': 'add',
-                'service': serviceIds[service],
+                'api_key': API_KEY,
+                'action': 'order',
+                'service_id': serviceIds[service],
                 'link': link,
                 'quantity': quantity
             };
